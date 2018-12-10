@@ -27,7 +27,7 @@ defmodule Marble do
     :ets.delete_all_objects(:circle)
     :ets.insert(:circle, {0, {0, 0}})
 
-    Enum.reduce(1..marbles, 0, fn n, current ->
+    Enum.reduce(1..marbles, {0, 0}, fn n, {current, next1} ->
       player = rem(n, players)
 
       cond do
@@ -45,15 +45,14 @@ defmodule Marble do
 
           add_score(player, current + n)
 
-          next
+          {next, next_next}
 
         true ->
-          {_, next1} = get_marble(current)
           {_, next2} = get_marble(next1)
 
           :ets.insert(:circle, [{next1, {current, n}}, {n, {next1, next2}}])
 
-          n
+          {n, next2}
       end
     end)
 
